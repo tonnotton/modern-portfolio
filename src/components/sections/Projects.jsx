@@ -35,6 +35,7 @@ const Projects = () => {
 
   return (
     <motion.section
+      id="projects"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.8 }}

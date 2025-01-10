@@ -3,11 +3,11 @@
 
 import { useCallback } from "react"
 import Particles from "react-tsparticles"
-import { loadFull } from "tsparticles"
+import { loadSlim } from "tsparticles-slim" // เปลี่ยนจาก loadFull เป็น loadSlim
 
 const ParticleBackground = () => {
   const particlesInit = useCallback(async (engine) => {
-    await loadFull(engine)
+    await loadSlim(engine)
   }, [])
 
   return (
@@ -48,8 +48,8 @@ const ParticleBackground = () => {
             width: 1,
           },
           move: {
-            enable: true,
             direction: "none",
+            enable: true,
             outModes: {
               default: "bounce",
             },

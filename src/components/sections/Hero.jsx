@@ -34,6 +34,7 @@ const TransparentButton = styled(Button)(({ theme }) => ({
 const Hero = () => {
   return (
     <motion.section
+     id="home"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-[calc(100vh-40px)] flex items-center justify-center"
@@ -50,15 +51,15 @@ const Hero = () => {
             transition={{ duration: 0.5 }}
             className="space-y-4"
           >
-<h1
-  className="text-4xl sm:text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-300 to-gray-500 animate-gradient transition-all duration-500"
-  style={{
-    backgroundSize: '300% 300%', // ทำให้ gradient เคลื่อนไหวเด่นชัด
-   
-  }}
->
-  Full Stack Developer
-</h1>
+            <h1
+              className="text-4xl sm:text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-300 to-gray-500 animate-gradient transition-all duration-500"
+              style={{
+                backgroundSize: '300% 300%', // ทำให้ gradient เคลื่อนไหวเด่นชัด
+
+              }}
+            >
+              Full Stack Developer
+            </h1>
 
 
 

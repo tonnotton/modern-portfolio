@@ -27,6 +27,8 @@ const About = () => {
 
   return (
     <motion.section
+      id="about"
+        className="h-screen"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.8 }}

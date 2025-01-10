@@ -11,9 +11,10 @@ import { useTheme } from '@mui/material/styles'
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('home')
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
@@ -22,13 +23,51 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    const options = {
+      threshold: 0.3,
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id)
+        }
+      })
+    }, options)
+
+    navItems.forEach((item) => {
+      const element = document.getElementById(item.toLowerCase())
+      if (element) observer.observe(element)
+    })
+
+    return () => {
+      navItems.forEach((item) => {
+        const element = document.getElementById(item.toLowerCase())
+        if (element) observer.unobserve(element)
+      })
+    }
+  }, [])
+
   const navItems = ['Home', 'About', 'Skills', 'Projects', 'Contact']
   const logoText = "Portfolio"
 
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId)
+    const offset = 80
+    const elementPosition = element.offsetTop - offset
+
+    window.scrollTo({
+      top: elementPosition,
+      behavior: 'smooth'
+    })
+    setIsOpen(false)
+  }
+
   const navVariants = {
     hidden: { y: -100, opacity: 0 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
       transition: { duration: 0.5 }
     }
@@ -52,7 +91,7 @@ const Navbar = () => {
         animate="visible"
         variants={navVariants}
       >
-        <AppBar 
+        <AppBar
           position="fixed"
           sx={{
             background: isScrolled ? 'rgba(255, 255, 255, 0.8)' : 'transparent',
@@ -62,18 +101,22 @@ const Navbar = () => {
           }}
         >
           <Container maxWidth="xl">
-            <Toolbar 
-              disableGutters 
-     
+            <Toolbar
+              disableGutters
+              sx={{
+                minHeight: { xs: '60px', md: '70px' },
+                px: { xs: 2, sm: 3, md: 4 }
+              }}
             >
               {/* Logo */}
-              <Box 
-                sx={{ 
+              <Box
+                sx={{
                   display: 'flex',
-                  fontSize: { xs: '1.5rem', sm: '1.8rem' }, 
+                  fontSize: { xs: '1.5rem', sm: '1.8rem' },
                   fontWeight: 'bold',
                   cursor: 'pointer'
                 }}
+                onClick={() => scrollToSection('home')}
               >
                 {logoText.split('').map((letter, index) => (
                   <motion.span
@@ -105,9 +148,9 @@ const Navbar = () => {
               <Box sx={{ flexGrow: 1 }} />
 
               {/* Desktop Menu */}
-              <Box 
-                sx={{ 
-                  display: { xs: 'none', md: 'flex' }, 
+              <Box
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
                   gap: { md: 3, lg: 4 }
                 }}
               >
@@ -117,25 +160,47 @@ const Navbar = () => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <Box 
-                      sx={{ 
+                    <Box
+                      onClick={() => scrollToSection(item.toLowerCase())}
+                      sx={{
                         cursor: 'pointer',
                         color: isScrolled ? '#000' : '#fff',
                         fontSize: { md: '0.9rem', lg: '1rem' },
                         position: 'relative',
                         padding: '0.5rem',
+                        transition: 'all 0.3s ease',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '0%',
+                          height: '0%',
+                          background: 'rgba(0, 127, 255, 0.1)',
+                          borderRadius: '8px',
+                          transition: 'all 0.3s ease',
+                          zIndex: -1,
+                        },
                         '&::after': {
                           content: '""',
                           position: 'absolute',
-                          width: '0%',
+                          width: activeSection === item.toLowerCase() ? '100%' : '0%',
                           height: '2px',
                           bottom: 0,
                           left: 0,
-                          backgroundColor: '#007FFF',
+                          background: 'linear-gradient(90deg, #007FFF, #00FF95)',
                           transition: 'width 0.3s ease'
                         },
-                        '&:hover::after': {
-                          width: '100%'
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          '&::before': {
+                            width: '120%',
+                            height: '120%',
+                          }
+                        },
+                        '&:active': {
+                          transform: 'translateY(1px)',
                         }
                       }}
                     >
@@ -148,7 +213,7 @@ const Navbar = () => {
               {/* Mobile Menu Button */}
               <IconButton
                 onClick={() => setIsOpen(!isOpen)}
-                sx={{ 
+                sx={{
                   display: { xs: 'flex', md: 'none' },
                   color: isScrolled ? '#000' : '#fff'
                 }}
@@ -165,6 +230,7 @@ const Navbar = () => {
         </AppBar>
       </motion.div>
 
+      {/* Mobile Menu */}
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
@@ -200,20 +266,56 @@ const Navbar = () => {
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  style={{ width: '100%' }}  // เพิ่มบรรทัดนี้
                 >
-                  <Box 
-                    sx={{ 
-                      color: '#fff',
-                      fontSize: { xs: '1.5rem', sm: '2rem' },
-                      cursor: 'pointer',
-                      fontWeight: 500
-                    }}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item}
-                  </Box>
+                 <Box 
+  sx={{ 
+    color: '#fff',
+    fontSize: { xs: '1.5rem', sm: '2rem' },
+    cursor: 'pointer',
+    fontWeight: 500,
+    position: 'relative',
+    padding: '0.5rem 1rem',
+    width: '100%',
+    textAlign: 'center',
+    transition: 'all 0.3s ease',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: activeSection === item.toLowerCase() ? '100%' : '0%',
+      height: '100%',
+      background: 'linear-gradient(90deg, rgba(0,127,255,0.1), rgba(0,255,149,0.1))',
+      transition: 'width 0.3s ease',
+      zIndex: -1,
+    },
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      width: activeSection === item.toLowerCase() ? '100%' : '0%',
+      height: '2px',
+      bottom: 0,
+      left: 0,
+      background: 'linear-gradient(90deg, #007FFF, #00FF95)',
+      transition: 'width 0.3s ease'
+    },
+    '&:hover': {
+      '&::before': {
+        width: '100%',
+      },
+      '&::after': {
+        width: '100%'
+      }
+    },
+    '&:active': {
+      transform: 'scale(0.98)',
+    }
+  }}
+  onClick={() => scrollToSection(item.toLowerCase())}
+>
+  {item}
+</Box>
                 </motion.div>
               ))}
             </Box>
